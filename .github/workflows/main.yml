@@ -1,60 +1,59 @@
-name: Flutter CI/CD Pipeline
+name: Build Android APK
+
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
   pull_request:
-    # Triggers on PRs against main to validate code before merge
     branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build_apk:
-    runs-on: ubuntu-latest 
+  build-android:
+    runs-on: ubuntu-latest
+
     steps:
-      - name: 📦 Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: ☕ Set up Java Development Kit (JDK 17)
-        # Required for building Android apps using Gradle
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: 'zulu'
           java-version: '17'
 
-      - name: 🛠️ Install Android SDK Components and Accept Licenses
-        # This step installs the required NDK, Build Tools, and Platform SDK
-        # to prevent Gradle from failing during the build phase.
-        run: |
-          yes | sdkmanager --licenses
-          # Install a recent, stable NDK (Version 26)
-          sdkmanager "ndk;26.1.10909125"
-          # Install the latest Platform SDK and Build Tools
-          sdkmanager "platforms;android-34" "build-tools;34.0.0"
-
-      - name: 🐦 Set up Flutter SDK
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          # Using 'stable' ensures you always use the latest stable version
-          flutter-version: 'stable'
+          channel: 'stable'
 
-      - name: ⚙️ Install Dependencies
+      - name: Install dependencies
         run: flutter pub get
 
-      - name: 🔬 Run Code Analysis (Linting)
-        # Check for errors and warnings before building
-        run: flutter analyze
-
-      - name: 🧪 Run Unit and Widget Tests
-        # Ensure all tests pass before continuing to the build
-        run: flutter test
-
-      - name: 🏗️ Build Release APK
+      - name: Build Android APK
         run: flutter build apk --release
 
-      - name: 💾 Upload Build Artifact
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-apk
-          # Using a wildcard ensures the correct file is picked up, even if the name changes (e.g., debug vs. release)
-          path: build/app/outputs/flutter-apk/*.apk
-          # Configure retention to save space (e.g., keep the artifact for 5 days)
-          retention-days: 5
+          name: breach-android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+      - name: Create release info
+        run: |
+          echo "## Build Information" > build-info.txt
+          echo "- **Build Date**: $(date)" >> build-info.txt
+          echo "- **Flutter Version**: $(flutter --version | head -1)" >> build-info.txt
+          echo "- **Commit SHA**: ${{ github.sha }}" >> build-info.txt
+          echo "- **Branch**: ${{ github.ref_name }}" >> build-info.txt
+
+      - name: Upload build info
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-info
+          path: build-info.txt
+          retention-days: 30
