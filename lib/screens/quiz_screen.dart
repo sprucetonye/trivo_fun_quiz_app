@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/question_model.dart';
 
@@ -11,14 +10,14 @@ class QuizScreen extends StatefulWidget {
   final Function(int index) onNavigate;
 
   const QuizScreen({
-    Key? key,
+    super.key,
     required this.question,
     required this.questionIndex,
     required this.totalQuestions,
     this.existingSelectedOption,
     required this.onAnswer,
     required this.onNavigate,
-  }) : super(key: key);
+  });
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();

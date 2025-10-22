@@ -6,10 +6,10 @@ class ReviewScreen extends StatelessWidget {
   final VoidCallback onRestart;
 
   const ReviewScreen({
-    Key? key,
+    super.key,
     required this.userResponses,
     required this.onRestart,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

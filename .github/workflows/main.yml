@@ -1,0 +1,36 @@
+name: Flutter CI/CD Pipeline
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build_apk:
+    # We use an Ubuntu runner as it supports Android builds and is cost-effective.
+    runs-on: ubuntu-latest 
+    steps:
+      - name: 📦 Checkout Repository
+        # Fetches your code from GitHub
+        uses: actions/checkout@v4
+
+      - name: 🐦 Set up Flutter SDK
+        # Sets up the Flutter environment
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+
+      - name: ⚙️ Install Dependencies
+        run: flutter pub get
+
+      - name: 🏗️ Build Release APK
+        # Creates the production-ready Android Package Kit
+        run: flutter build apk --release
+
+      - name: 💾 Upload Build Artifact
+        # This saves the APK file so you can download it from GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk # The name you'll see on GitHub
+          # This is the standard path where the flutter build command places the APK
+          path: build/app/outputs/flutter-apk/app-release.apk

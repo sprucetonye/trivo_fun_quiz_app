@@ -55,14 +55,14 @@ class QuizController extends InheritedWidget {
 
   QuizController({
     // Corrected capitalization of 'Key' to 'key'
-    Key? key,
-    required Widget child,
+    super.key,
+    required super.child,
     required this.currentQuestionIndex,
     required this.userResponses, // Standardized to plural
     required this.goToQuestion,
     required this.recordAnswer,
     required this.resetQuiz,
-  }) : totalQuestions = question.length, super(key: key, child: child);
+  }) : totalQuestions = question.length;
 
   static QuizController of(BuildContext context){ // Renamed 'content' to 'context' for clarity
     // Added missing parenthesis and semicolon
@@ -85,7 +85,7 @@ class QuizController extends InheritedWidget {
 // -----------------------------------------------------------------------------------
 
 class QuizAppState extends StatefulWidget {
-  const QuizAppState({Key? key}) : super(key: key);
+  const QuizAppState({super.key});
 
 
   @override

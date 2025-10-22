@@ -8,13 +8,13 @@ class ResultsScreen extends StatelessWidget {
   final VoidCallback onRestart;
 
   const ResultsScreen({
-    Key? key,
+    super.key,
     required this.score,
     required this.total,
     required this.answered,
     required this.onReview,
     required this.onRestart,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
