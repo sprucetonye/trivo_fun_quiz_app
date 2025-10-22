@@ -20,6 +20,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: 🛠️ Install Android SDK Components and Accept Licenses
+        # This step installs the required NDK, Build Tools, and Platform SDK
+        # to prevent Gradle from failing during the build phase.
+        run: |
+          yes | sdkmanager --licenses
+          # Install a recent, stable NDK (Version 26)
+          sdkmanager "ndk;26.1.10909125"
+          # Install the latest Platform SDK and Build Tools
+          sdkmanager "platforms;android-34" "build-tools;34.0.0"
+
       - name: 🐦 Set up Flutter SDK
         uses: subosito/flutter-action@v2
         with:
